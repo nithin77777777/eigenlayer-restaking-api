@@ -1,19 +1,28 @@
 const express = require('express');
+const connectDB = require('./config/db');
+const cors = require('cors');
+
 const app = express();
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 
-// Routes
-const restakerRoutes = require('./routes/restakers');
-const validatorRoutes = require('./routes/validators');
-const rewardRoutes = require('./routes/rewards');
+// Database
+connectDB();
 
-app.use('/api/v1/restakers', restakerRoutes);
-app.use('/api/v1/validators', validatorRoutes);
-app.use('/api/v1/rewards', rewardRoutes);
+// Routes
+app.use('/api/v1/restakers', require('./routes/restakers'));
+app.use('/api/v1/validators', require('./routes/validators'));
+app.use('/api/v1/rewards', require('./routes/rewards'));
+
+// Root route
+app.get('/', (req, res) => {
+  res.json({ status: 'API Running' });
+});
 
 // Start server
-app.listen(5000, () => {
-  console.log('Server running on port 5000');
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
